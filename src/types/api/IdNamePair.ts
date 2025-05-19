@@ -1,0 +1,1 @@
+export type IdNamePair = { id: number; name: string };
