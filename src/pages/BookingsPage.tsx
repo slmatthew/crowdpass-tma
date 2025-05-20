@@ -10,6 +10,7 @@ import { TicketType } from "@/types/models";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { on, postEvent } from "@telegram-apps/sdk-react";
 import { Section, Cell, List, Title, Badge, ButtonCell } from "@telegram-apps/telegram-ui";
+import { AxiosError } from "axios";
 import { Ban, CreditCard } from "lucide-react";
 import { FC, useEffect } from "react";
 
@@ -116,6 +117,17 @@ export const BookingsPage: FC = () => {
       postEvent('web_app_open_invoice', { slug });
     } catch(err: any) {
       console.error(err);
+      if(err instanceof AxiosError) {
+        const message = err.response?.data.message ?? 'Произошла ошибка'
+        postEvent('web_app_open_popup', {
+          title: 'Уведомление',
+          message,
+          buttons: [{
+            id: 'ok',
+            type: 'ok'
+          }]
+        });
+      }
     }
   };
   
