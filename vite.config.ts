@@ -24,7 +24,7 @@ export default defineConfig({
   publicDir: './public',
   server: {
     allowedHosts: true,
-    port: 3002,
+    port: 3132,
   },
   define: {
     __APP_VERSION__: JSON.stringify(packageJson.version),
