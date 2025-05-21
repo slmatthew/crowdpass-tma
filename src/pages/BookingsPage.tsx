@@ -70,6 +70,8 @@ export const BookingsPage: FC = () => {
 
       refetch();
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['my-tickets'] });
+
       postEvent('web_app_open_popup', {
         title: 'Уведомление',
         message,
