@@ -66,7 +66,7 @@ export const TicketsPage: FC = () => {
                   subhead={ticket.event.name}
                   subtitle={`${ticket.event.id}-${ticket.id}`}
                   after={ticket.soon ? <Flame style={{ color: 'var(--sfx-orange)' }} /> : null}
-                  onClick={() => openModal('ticket', { ...ticket, booking, boughtDate: booking.createdAt })}
+                  onClick={() => openModal('ticket', { ...ticket, booking })}
                 >
                   {ticket.ticketType.name}
                 </Cell>

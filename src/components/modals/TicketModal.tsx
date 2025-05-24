@@ -13,7 +13,7 @@ type ModalTicket = Ticket & {
     name: string;
   },
   price?: number;
-  boughtDate?: string;
+  purchaseDate?: string;
 };
 
 const getDisplayStatus = (status: Ticket['status']): string => {
@@ -65,9 +65,9 @@ export const TicketModal: FC<ModalProps & { ticket: ModalTicket }> = ({ ticket, 
               {ticket.ticketType.name}
             </Cell>
           )}
-          {ticket.boughtDate && (
+          {ticket.purchaseDate && (
             <Cell readOnly description="Дата покупки">
-              {dayjs(new Date(ticket.boughtDate)).format('DD.MM.YYYY в HH:mm:ss')}
+              {dayjs(new Date(ticket.purchaseDate)).format('DD.MM.YYYY в HH:mm:ss')}
             </Cell>
           )}
         </>
