@@ -1,10 +1,24 @@
 import { IdNamePair } from "./IdNamePair";
-import { Event } from "../models";
 
 export type EventsResponse = {
-  events: (Event & { prices: { min: number | null, max: number | null } })[];
+  events: {
+    id: number;
+    slug: string | null;
+    name: string;
+    description: string;
+    startDate: Date;
+    location: string;
+    posterUrl: string | null;
+    organizerId: number;
+    categoryId: number;
+    subcategoryId: number;
+    prices: {
+      min: number;
+      max: number;
+    };
+  }[];
   totalCount: number;
-  organizers: IdNamePair[];
+  organizers: { id: number; name: string; slug: string | null; }[];
   categories: IdNamePair[];
   subcategories: (IdNamePair & { categoryId: number })[];
 };

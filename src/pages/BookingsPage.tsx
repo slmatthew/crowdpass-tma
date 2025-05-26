@@ -5,8 +5,7 @@ import { Page } from "@/components/Page";
 import { useModals } from "@/contexts/ModalsContext";
 import { publicUrl } from "@/helpers/publicUrl";
 import { useApiClient } from "@/hooks/useApiClient";
-import { UserBooking } from "@/types/api/UserBooking";
-import { TicketType } from "@/types/models";
+import { MyBookingsResponse } from "@/types/api/MyBookingsResponse";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { on, postEvent } from "@telegram-apps/sdk-react";
 import { Section, Cell, List, Title, Badge, ButtonCell } from "@telegram-apps/telegram-ui";
@@ -19,12 +18,12 @@ export const BookingsPage: FC = () => {
   const { openModal } = useModals();
 
   const {
-    data: bookings,
+    data: bookingsData,
     isLoading,
     refetch,
   } = useQuery({
     queryKey: ['my-bookings'],
-    queryFn: () => api.get<UserBooking[]>('bookings/').then(res => res.data),
+    queryFn: () => api.get<MyBookingsResponse>('bookings/').then(res => res.data),
     staleTime: 1000 * 60 * 5,
   });
 
@@ -90,7 +89,7 @@ export const BookingsPage: FC = () => {
 
   if(isLoading) return <LoadingPage />;
 
-  if(!isLoading && bookings?.length === 0) return <DuckedError
+  if(!isLoading && bookingsData?.bookings.length === 0) return <DuckedError
     description={<span>Давайте скорее <Link to="/events">исправим это</Link>!</span>}
     header="Бронирований нет"
     tgsUrl={publicUrl('/duck1.tgs')}
@@ -139,14 +138,19 @@ export const BookingsPage: FC = () => {
         <section style={{ textAlign: 'center', marginTop: '1rem' }}>
           <Title weight="2" onClick={() => refetch()}>Мои бронирования</Title>
         </section>
-        {bookings?.map((booking) => {
-          const ticketsMap = new Map<number, { type: TicketType, count: number }>();
-          booking.bookingTickets.forEach((bTicket) => {
-            if(!ticketsMap.has(bTicket.ticket.ticketTypeId)) {
-              ticketsMap.set(bTicket.ticket.ticketTypeId, { type: bTicket.ticket.ticketType, count: 0 });
+        {bookingsData?.bookings.map((booking) => {
+          const ticketsMap = new Map<number, { type: MyBookingsResponse['ticketTypes'][number], count: number }>();
+          booking.tickets.forEach((ticket) => {
+            if(!ticketsMap.has(ticket.ticketTypeId)) {
+              const ticketType = bookingsData.ticketTypes.find(t => t.id === ticket.ticketTypeId);
+              if(!ticketType) {
+                console.error(`Ticket type with ID ${ticket.ticketTypeId} not found in booking ${booking.id}`);
+                return;
+              }
+              ticketsMap.set(ticket.ticketTypeId, { type: ticketType, count: 0 });
             }
 
-            const ticketEntry = ticketsMap.get(bTicket.ticket.ticketTypeId)!;
+            const ticketEntry = ticketsMap.get(ticket.ticketTypeId)!;
             ticketEntry.count += 1;
           });
 
@@ -154,17 +158,25 @@ export const BookingsPage: FC = () => {
 
           return (
             <Section key={booking.id} header={`Бронирование №${booking.id}`}>
-              {tickets.map((ticket, idx) => (
-                <Cell
-                  key={idx}
-                  subhead={ticket.type.event!.name}
-                  description={ticket.type.event!.description}
-                  after={<Badge type="number" mode="gray">{ticket.type.price * ticket.count}</Badge>}
-                  onClick={() => openModal('event', ticket.type.event!)}
-                >
-                  {ticket.type.name} <span style={{ color: 'var(--tg-theme-subtitle-text-color)' }}>× {ticket.count}</span>
-                </Cell>
-              ))}
+              {tickets.map((ticket, idx) => {
+                const event = bookingsData.events.find(e => e.id === ticket.type.eventId);
+                if(!event) {
+                  console.error(`Event or ticket type not found for booking ${booking.id}, ticket type ID ${ticket.type.id}`);
+                  return null;
+                }
+
+                return (
+                  <Cell
+                    key={idx}
+                    subhead={event.name}
+                    description={event.description}
+                    after={<Badge type="number" mode="gray">{ticket.type.price * ticket.count}</Badge>}
+                    onClick={() => openModal('event', event)}
+                  >
+                    {ticket.type.name} <span style={{ color: 'var(--tg-theme-subtitle-text-color)' }}>× {ticket.count}</span>
+                  </Cell>
+                );
+              })}
               <ButtonCell onClick={() => handlePay(booking.id)} before={<CreditCard />}>
                 Оплатить бронирование
               </ButtonCell>
