@@ -24,7 +24,9 @@ export const ProfilePage: FC = () => {
   });
 
   useEffect(() => {
-    const removePhoneListener = on('phone_requested', _ => refreshUser());
+    const removePhoneListener = on('phone_requested', _ => {
+      setTimeout(() => refreshUser(), 3000);
+    });
 
     return () => removePhoneListener();
   }, []);

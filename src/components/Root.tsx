@@ -1,6 +1,7 @@
 import { App } from '@/components/App.tsx';
 import { ErrorBoundary } from '@/components/ErrorBoundary.tsx';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { BridgeProvider } from '@/contexts/BridgeContext';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();
@@ -27,7 +28,9 @@ export function Root() {
     <ErrorBoundary fallback={ErrorBoundaryError}>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <App/>
+          <BridgeProvider>
+            <App/>
+          </BridgeProvider>
         </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>

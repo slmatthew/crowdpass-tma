@@ -26,6 +26,8 @@ export function App() {
     postEvent('iframe_will_reload');
     location.reload();
   };
+
+  // requestFullscreen here
   
   useEffect(() => {
     if(!isAuthenticated) {

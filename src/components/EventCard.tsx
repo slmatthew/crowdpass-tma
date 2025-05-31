@@ -6,6 +6,20 @@ import dayjs from 'dayjs';
 import { appConfig } from '@/config/appConfig';
 import { useNavigate } from 'react-router-dom';
 
+export const MockedEventForSkeleton: Event = {
+  id: 0,
+  name: 'Salo Matuchak Event',
+  description: 'Really good event for all people',
+  startDate: new Date().toISOString(),
+  endDate: new Date().toISOString(),
+  location: 'Somewhere',
+  posterUrl: '',
+  organizerId: 0,
+  categoryId: 0,
+  subcategoryId: 0,
+  isSalesEnabled: false,
+};
+
 export type EventCardProps = CardProps & {
   event: Event;
 };

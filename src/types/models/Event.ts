@@ -14,6 +14,7 @@ export interface Event {
   organizerId: number;
   categoryId: number;
   subcategoryId: number;
+  isSalesEnabled: boolean;
   organizer?: Organizer;
   category?: Category;
   subcategory?: Subcategory;

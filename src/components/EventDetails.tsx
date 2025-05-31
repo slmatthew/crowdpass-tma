@@ -1,7 +1,7 @@
 import { appConfig } from "@/config/appConfig";
 import { Event } from "@/types/models";
 import { themeParamsButtonColor, themeParamsHintColor } from "@telegram-apps/sdk-react";
-import { Section, Title, Cell } from "@telegram-apps/telegram-ui";
+import { Section, Title, Cell, Placeholder } from "@telegram-apps/telegram-ui";
 import dayjs from "dayjs";
 import { MapPin, Calendar, CalendarCheck } from "lucide-react";
 import React, { FC } from "react";
@@ -104,6 +104,14 @@ export const EventDetails: FC<EventDetailsProps> = ({ event, children, childrenP
           {humanizedDate(event.endDate)}
         </Cell>
       </Section>
+      {!event.isSalesEnabled && (
+        <Section>
+          <Placeholder
+            description="Организаторы мероприятия пока не готовы продавать билеты"
+            header="Билеты не продаются"
+          />
+        </Section>
+      )}
       {childrenPosition === 'afterSecondary' && children}
     </React.Fragment>
   );
